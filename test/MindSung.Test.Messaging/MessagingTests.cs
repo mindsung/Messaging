@@ -26,9 +26,10 @@ namespace MindSung.Test.Messaging
                 var tasks = new List<Task>();
                 for (var i = 0; i < 1000; i++)
                 {
+                    var b = (byte)(i % 250);
                     tasks.Add(Task.Run(async () =>
                     {
-                        var data = new byte[] { 1, 2, 3, 4 };
+                        var data = new byte[] { b, ++b, ++b, ++b };
                         var reply = await client.SendMessage(testCommand, data);
                         if (reply.cmd != testReply) throw new Exception("Unexpected reply.");
                         if (reply.data == null || reply.data.Length != data.Length) throw new Exception("Unexpected data length.");
