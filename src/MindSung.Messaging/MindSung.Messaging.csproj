@@ -11,6 +11,7 @@
     <PackageProjectUrl>https://github.com/mindsung/Messaging</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/mindsung/Messaging</RepositoryUrl>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
 </Project>
