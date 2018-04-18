@@ -5,11 +5,13 @@ public class MessagingTests
     const int testPort = 4321;
     const int testCommand = 5;
     const int testReply = 6;
-    
+
+    static readonly IPAddress localhost = IPAddress.Parse("127.0.0.1");
+
     public async Task ClientServer()
     {
-        using (var server = new TestServer(testPort))
-        using (var client = new MessageClient(IPAddress.Parse("127.0.0.1"), testPort, 5, 0) { CommandTimeout = 200 })
+        using (var server = new TestServer(new IPEndPoint(localhost, testPort)))
+        using (var client = new MessageClient(localhost, testPort, 5, 0) { CommandTimeout = 200 })
         {
             await server.Start();
             var tasks = new List<Task>();
@@ -33,10 +35,10 @@ public class MessagingTests
 
     class TestServer : MessageServer
     {
-        public TestServer(int port) : base(port)
+        public TestServer(IPEndPoint bind) : base(bind)
         {
         }
-        
+
         protected override Task OnMessage(MessageConnection connection, Message message)
         {
             if (message.cmd != testCommand) throw new Exception("Unexpected command.");
