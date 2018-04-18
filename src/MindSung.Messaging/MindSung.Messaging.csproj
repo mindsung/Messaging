@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <Description>MindSung.Messaging is a library that implements a lightweight, reliable messaging client/server protocol over TCP/IP.</Description>
-    <VersionPrefix>1.0.0</VersionPrefix>
+    <VersionPrefix>1.0.1</VersionPrefix>
     <Authors>Robb Eads</Authors>
     <TargetFrameworks>net451;netstandard1.6</TargetFrameworks>
     <AssemblyName>MindSung.Messaging</AssemblyName>
