@@ -8,6 +8,7 @@ public class MessagingTests
 
     static readonly IPAddress localhost = IPAddress.Parse("127.0.0.1");
 
+    [Fact]
     public async Task ClientServer()
     {
         using (var server = new TestServer(new IPEndPoint(localhost, testPort)))
