@@ -4,60 +4,45 @@ using MindSung.Messaging;
 using System.Threading.Tasks;
 using System.Net;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MindSung.Test.Messaging
 {
     public class MessagingTests
     {
+        const int testPort = 4321;
+        const int testCommand = 5;
+        const int testReply = 6;
+
         [Fact]
         public async Task ClientServer()
         {
-            using (var server = new Server(4321))
-            using (var client = new Client(IPAddress.Parse("127.0.0.1"), 4321, 5, 0))
+            using (var server = new TestServer(testPort))
+            using (var client = new MessageClient(IPAddress.Parse("127.0.0.1"), testPort, 5, 0) { CommandTimeout = 200 })
             {
-                var tasks = new List<Task>();
                 await server.Start();
-                for (var i = 0; i < 100; i++)
+                var tasks = new List<Task>();
+                for (var i = 0; i < 1000; i++)
                 {
                     tasks.Add(Task.Run(async () =>
                     {
-                        await client.SendTestMessage();
+                        var data = new byte[] { 1, 2, 3, 4 };
+                        var reply = await client.SendMessage(testCommand, data);
+                        if (reply.cmd != testReply) throw new Exception("Unexpected reply.");
+                        if (reply.data == null || reply.data.Length != data.Length) throw new Exception("Unexpected data length.");
+                        for (var iData = 0; iData < data.Length; iData++)
+                        {
+                            if (reply.data[iData] != data[iData]) throw new Exception("Unexpected data.");
+                        }
                     }));
                 }
                 await Task.WhenAll(tasks);
             }
         }
 
-        const int testCommand = 5;
-        const int testReply = 6;
-
-        class Client : MessageClient
+        class TestServer : MessageServer
         {
-            public Client(IPAddress hostAddress, int port, int numConnections = 1, int recycleTimeMs = 0) : base(hostAddress, port, numConnections, recycleTimeMs)
-            {
-            }
-
-            protected override Task OnMessage(MessageConnection connection, Message message)
-            {
-                return Task.CompletedTask;
-            }
-
-            public async Task SendTestMessage()
-            {
-                var data = new byte[] { 1, 2, 3, 4 };
-                var reply = await SendMessage(testCommand, data);
-                if (reply.cmd != testReply) throw new Exception("Unexpected reply.");
-                if (reply.data == null || reply.data.Length != data.Length) throw new Exception("Unexpected data length.");
-                for (var i = 0; i < data.Length; i++)
-                {
-                    if (reply.data[i] != data[i]) throw new Exception("Unexpected data.");
-                }
-            }
-        }
-
-        class Server : MessageServer
-        {
-            public Server(int port) : base(port)
+            public TestServer(int port) : base(port)
             {
             }
 

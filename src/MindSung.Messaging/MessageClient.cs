@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MindSung.Messaging
 {
-    public abstract class MessageClient : IDisposable
+    public class MessageClient : IDisposable
     {
         public MessageClient(IPAddress hostAddress, int port, int numConnections = 1, int recycleTimeMs = 0)
         {
@@ -34,7 +34,10 @@ namespace MindSung.Messaging
         public int CommandTimeout { get; set; }
         public bool KeepAlive { get; set; }
 
-        protected abstract Task OnMessage(MessageConnection connection, Message message);
+        protected virtual Task OnMessage(MessageConnection connection, Message message)
+        {
+            return Task.FromResult(true);
+        }
 
         IPAddress address;
         int port;
@@ -42,7 +45,7 @@ namespace MindSung.Messaging
         int recycleTimeMs;
         int icn = 0;
 
-        protected async Task<Message> SendMessage(int cmd, byte[] data = null, byte[] args = null)
+        public async Task<Message> SendMessage(int cmd, byte[] data = null, byte[] args = null)
         {
             var iFirst = -1;
             return await Retry.Do(async () =>

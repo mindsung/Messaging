@@ -37,7 +37,7 @@ namespace MindSung.Messaging
                     tcp.Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.KeepAlive, true);
                     tcp.NoDelay = true;
                     tcp.SendTimeout = CommandTimeout;
-                    var connection = new MessageConnection(tcp, (cn, msg) => OnMessage(cn, msg));
+                    var connection = new MessageConnection(tcp, (cn, msg) => { try { OnMessage(cn, msg); } catch { } });
                     lock (tcpConnections) tcpConnections.Add(new TcpConnectionInfo { server = tcp, connection = connection });
                     connection.Start();
                 }
