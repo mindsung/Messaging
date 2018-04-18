@@ -20,7 +20,7 @@ namespace MindSung.Test.Messaging
         public async Task ClientServer()
         {
             using (var server = new TestServer(new IPEndPoint(localhost, testPort)))
-            using (var client = new MessageClient(localhost, testPort, 5, 0) { CommandTimeout = 200 })
+            using (var client = new MessageClient(new IPEndPoint(localhost, testPort), 5, 0) { CommandTimeout = 200 })
             {
                 await server.Start();
                 var tasks = new List<Task>();
